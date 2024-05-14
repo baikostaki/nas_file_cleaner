@@ -59,6 +59,7 @@ class Helper:
 
         return str(round(current_size, 2)) + " " + suffix
 
+    # TODO - move this to tests, makes no sense to be here
     @staticmethod
     def create_files(path: str) -> tuple[Path, Path, Path, Path]:
         d1: Path = Path(path, "lvl1/", "lvl2/", "lvl3/")
@@ -89,6 +90,7 @@ class Helper:
             path_list[i] = Path(*parts)
         return path_list
 
+    #TODO: Unit test it and use the dict comprehension afterwards
     @staticmethod
     def find_archives(path: Path) -> dict[Path, int]:
         archives: dict[Path, int] = {}
@@ -98,9 +100,14 @@ class Helper:
             if p.is_file() and p.suffix in Constants.ARCHIVE_SUFFIXES:
                 archives[p] = p.stat().st_size
                 size += archives[p]
-
+        archives2: dict[Path, int] = {
+            p: p.stat().st_size
+            for p in path.glob("*")
+            if p.is_file() and p.suffix in Constants.ARCHIVE_SUFFIXES
+        }
         return archives
 
+    #TODO: check why -1 is needed
     @staticmethod
     def find_extracted_archives(path: Path) -> dict[Path, int]:
         folders: dict[Path, int] = {}
@@ -188,13 +195,13 @@ class Helper:
     @staticmethod
     def get_folder_size(folder: Path):
         return sum(file.stat().st_size for file in Path(folder).rglob("*"))
-   
+
     @staticmethod
     def delete_empty_dirs(paths: dict[Path, int]) -> None:
         pass
         # delete batch files, make it ask for prompt, then uncomment :)
         for item in paths:
-            shutil.rmtree(item) 
+            shutil.rmtree(item)
 
     @staticmethod
     def filter_directories(
@@ -213,8 +220,6 @@ class Helper:
                 Helper.get_human_readable_size(current_size)
                 batch_list[item] = current_size
         return batch_list
-    
-
 
 
 class Printer:

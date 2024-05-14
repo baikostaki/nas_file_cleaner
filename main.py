@@ -32,6 +32,7 @@ def main() -> None:
             cmd.remove_nested_directory(dir)
             cmd.remove_nested_directory(dir, delete_only=True)
 
-
+#TODO: Fix unpacking - won't unpack if already unpacked + somehow got stuck at WiAB-Chapter3-pc.zip - for others it created only empty dirs
+#TODO: _saves & html_saves should be added to file with excluded dirnames or better add logic to search for commonn empty dir patterns (maybe .save whitelist) first and then according to size
 if __name__ == "__main__":
     main()

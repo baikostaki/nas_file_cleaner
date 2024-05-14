@@ -17,7 +17,7 @@ class CommandParser:
             if not Path(a.stem).is_dir():
                 os.mkdir(a.stem)
 
-        patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.")  # type: ignore
+        patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.", verbosity=False)  # type: ignore
 
     def delete_unpacked_archives(self, curr_path: Path):
         archives_to_delete: dict[Path, int] = Helper.find_extracted_archives(curr_path)
