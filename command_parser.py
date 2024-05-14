@@ -5,9 +5,6 @@ from constants import bcolors, Constants
 import os
 import patoolib  # type: ignore
 
-
-
-
 class CommandParser:
     def extract_archives(self, curr_path: Path) -> None:
         archives: dict[Path, int] = Helper.find_archives(curr_path)
@@ -19,8 +16,7 @@ class CommandParser:
         for a in archives:
             if not Path(a.stem).is_dir():
                 os.mkdir(a.stem)
-
-        patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.")  # type: ignore
+            patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.", verbosity=0)  # type: ignore
 
     def delete_unpacked_archives(self, curr_path: Path):
         archives_to_delete: dict[Path, int] = Helper.find_extracted_archives(curr_path)
@@ -29,7 +25,7 @@ class CommandParser:
             delete_files: bool = (
                 True
                 if input(
-                    'delete unpacked archives? Press "y" to confirm or something else to decline: '
+                    'delete extracted archives? Press "y" to confirm or something else to decline: '
                 )
                 == "y"
                 else False
@@ -55,21 +51,21 @@ class CommandParser:
                 Helper.delete_empty_dirs(dirs_to_delete)  # type: ignore
 
     def remove_nested_directory(self, path: Path, delete_only: bool = False) -> None:
-        dir_contents = list(path.glob("*"))
+        dirs: list[Path] = [p for p in list(path.glob("*")) if p.is_dir()] 
         print('Listing nested directories')
-        print('Nested dir is empty') if not dir_contents else [print(f'{x}') for x in dir_contents]
+        print('Nested dir is empty') if not dirs else [print(f'{x}') for x in dirs]
         
         
         # [print(f".....{x}") for x in items_to_move]
 
         # empty directory
-        if Path.exists(path) and not dir_contents:
+        if Path.exists(path) and not dirs:
             os.rmdir(path)
             print(f'path {path} removed')
             if delete_only:
                 return
 
-        for item in dir_contents:
+        for item in dirs:
             destination = item.parents[1]
             if os.path.isfile(item):
                 shutil.move(item, destination)
