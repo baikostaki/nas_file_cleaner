@@ -12,25 +12,36 @@ class Helper:
     def sum_directory_tree(path: Path, glob: str) -> int:
         return sum(f.stat().st_size for f in path.rglob(glob))
 
-    # TODO: check if item.is_file is needed below in for loop
+    # FIXME: refactor method and edit docstring, why should I pass glob to it? Why call it filter by size when
+    # method returns dict with dirpath and its size?
     @staticmethod
     def filter_by_size(
-        path: Path, glob: str, threshold: int = 50 * Constants.KILOBYTE
+        path: Path, glob: str, threshold: int = 50 * Constants.KILOBYTE, suffixes:list[str]=Constants.FILTER_SUFFIXES
     ) -> dict[Path, int]:
-        batch_list: dict[Path, int] = {}
-        current_size: int = -1
-        # test: list[Path]  =  [x for x in Path(path).rglob(glob)]
-        # processed: list[Path] = []
-        for item in path.glob(glob):
-            if item.is_file() and item.stem not in Constants.FILTER_SUFFIXES:
-                current_size = item.stat().st_size
-            elif item.is_dir():
-                current_size = Helper.sum_directory_tree(item, glob=glob)
+        """traverses all items and dirs in path and returns ones less than *threshold*. Skips
+        those in passed as s
 
-            if current_size < threshold and not item.is_file():
-                # get_human_readable_size(current_size)
-                batch_list[item] = current_size
-        return batch_list
+        Args:
+            path (Path):
+            glob (str):
+            threshold (int, optional): Defaults to 50 KiB.
+            suffixes[str]: Omits from filtering dirnames and file suffixes
+
+        Returns:
+            dict[Path, int]: dict with dirpath as key and its size as value
+        """
+        result: dict[Path, int] = {}
+        for item in path.glob(glob):
+            if item.is_file() and item.suffix not in suffixes:
+                current_size: int = item.stat().st_size
+            elif item.is_dir() and item.stem not in suffixes:
+                current_size = Helper.sum_directory_tree(item, glob=glob)
+            else:
+                continue
+
+            if current_size < threshold:
+                result[item] = current_size
+        return result
 
     @staticmethod
     def create_folders(path: str) -> tuple[Path, Path]:
@@ -90,7 +101,7 @@ class Helper:
             path_list[i] = Path(*parts)
         return path_list
 
-    #TODO: Unit test it and use the dict comprehension afterwards
+    # TODO: Unit test it and use the dict comprehension afterwards
     @staticmethod
     def find_archives(path: Path) -> dict[Path, int]:
         archives: dict[Path, int] = {}
@@ -100,16 +111,16 @@ class Helper:
             if p.is_file() and p.suffix in Constants.ARCHIVE_SUFFIXES:
                 archives[p] = p.stat().st_size
                 size += archives[p]
-      
-    #TODO: implement this: (ChatGPT)
-        archives2: dict[Path, int] = { #type: ignore
+
+        # TODO: implement this: (ChatGPT)
+        archives2: dict[Path, int] = {  # type: ignore
             p: p.stat().st_size
             for p in path.glob("*")
             if p.is_file() and p.suffix in Constants.ARCHIVE_SUFFIXES
         }
         return archives
 
-    #TODO: check why -1 is needed
+    # TODO: check why -1 is needed
     @staticmethod
     def find_extracted_archives(path: Path) -> dict[Path, int]:
         folders: dict[Path, int] = {}
@@ -197,6 +208,7 @@ class Helper:
     @staticmethod
     def get_folder_size(folder: Path):
         return sum(file.stat().st_size for file in Path(folder).rglob("*"))
+
     @staticmethod
     def delete_empty_dirs(paths: dict[Path, int]) -> None:
         pass
