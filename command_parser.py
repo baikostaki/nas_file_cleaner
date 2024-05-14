@@ -16,8 +16,7 @@ class CommandParser:
         for a in archives:
             if not Path(a.stem).is_dir():
                 os.mkdir(a.stem)
-
-        patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.", verbosity=False)  # type: ignore
+            patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.", verbosity=0)  # type: ignore
 
     def delete_unpacked_archives(self, curr_path: Path):
         archives_to_delete: dict[Path, int] = Helper.find_extracted_archives(curr_path)
@@ -52,9 +51,9 @@ class CommandParser:
                 Helper.delete_empty_dirs(dirs_to_delete)  # type: ignore
 
     def remove_nested_directory(self, path: Path, delete_only: bool = False) -> None:
-        dir_contents = list(path.glob("*"))
+        dirs: list[Path] = [p for p in list(path.glob("*")) if p.is_dir()] 
         print('Listing nested directories')
-        print('Nested dir is empty') if not dir_contents else [print(f'{x}') for x in dir_contents]
+        print('Nested dir is empty') if not dirs else [print(f'{x}') for x in dirs]
         
         
         # [print(f".....{x}") for x in items_to_move]
