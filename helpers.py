@@ -70,24 +70,7 @@ class Helper:
 
         return str(round(current_size, 2)) + " " + suffix
 
-    # TODO - move this to tests, makes no sense to be here
-    @staticmethod
-    def create_files(path: str) -> tuple[Path, Path, Path, Path]:
-        d1: Path = Path(path, "lvl1/", "lvl2/", "lvl3/")
-        f1: Path = Path(d1, "file1.file")
-        f2: Path = Path(d1, "file2.file")
-        f3: Path = Path(d1.parent, "file3.file")
-        f4: Path = Path(d1, "bigger_than_1mb_file.file")
-        with open(f1, "w") as file:
-            file.truncate(100 * Constants.KILOBYTE)
-        with open(f2, "w") as file:
-            file.truncate(110 * Constants.KILOBYTE)
-        with open(f3, "w") as file:
-            file.truncate(20 * Constants.KILOBYTE)
-        with open(f4, "w") as file:
-            file.truncate(1 * Constants.MEGABYTE + 1)
-        return (f1, f2, f3, f4)
-
+    
     @staticmethod
     def change_base_dir_in_path(paths: tuple[Path], tmp_dir: str) -> list[Path]:
         """

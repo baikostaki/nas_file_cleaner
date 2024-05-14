@@ -149,7 +149,8 @@ class TestFiltering(unittest.TestCase):
     def setUpClass(cls) -> None:
         pass
         # TODO: Add decorator to functions for verbose mode
-    #FIXME I don't think it's working. Seems a test made to be passed.
+        
+    
     def test_filter_of_files(self, verbose: bool = True) -> None:
         with TemporaryDirectory() as tmp_dir:
             self.d1: Path
