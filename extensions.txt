@@ -3,6 +3,9 @@
 .sub
 .thumb
 .bat
+_saves
+_html_saves
+_ahk
 
 #ARCHIVES
 .rar

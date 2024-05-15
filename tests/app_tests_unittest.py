@@ -13,11 +13,15 @@ def seed_dirs(path: str) -> list[Path]:
     d2.mkdir()
     with open(Path(d1, "file1.file"), "w") as file:
         file.truncate(100 * constants.KILOBYTE)
+        file.truncate(100 * constants.KILOBYTE)
     with open(Path(d1, "file2.file"), "w") as file:
+        file.truncate(110 * constants.KILOBYTE)
         file.truncate(110 * constants.KILOBYTE)
     with open(Path(d1.parent, "file3.file"), "w") as file:
         file.truncate(120 * constants.KILOBYTE)
+        file.truncate(120 * constants.KILOBYTE)
     with open(Path(d1, "bigger_than_1mb_file.file"), "w") as file:
+        file.truncate(1 * constants.MEGABYTE + 1)
         file.truncate(1 * constants.MEGABYTE + 1)
     return list((d1, d2))
 
@@ -75,14 +79,18 @@ class TestHumanReadableSize(unittest.TestCase):
     def test_human_size_zero_bytes(self):
         test_size: int = 0
         size: str = helpers.get_human_readable_size(test_size)
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "0.0 B")
 
     def test_human_size_bytes(self):
         test_size: int = 150
         size: str = helpers.get_human_readable_size(test_size)
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "150.0 B")
 
     def test_human_size_kilobytes(self):
+        test_size: int = 1 * constants.KILOBYTE
+        size: str = helpers.get_human_readable_size(test_size)
         test_size: int = 1 * constants.KILOBYTE
         size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1.0 KiB")
@@ -90,14 +98,20 @@ class TestHumanReadableSize(unittest.TestCase):
     def test_human_size_megabytes(self):
         test_size: int = 1 * constants.MEGABYTE
         size: str = helpers.get_human_readable_size(test_size)
+        test_size: int = 1 * constants.MEGABYTE
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1.0 MiB")
 
     def test_human_size_gigabytes(self):
         test_size = 1 * constants.GIGABYTE
         size: str = helpers.get_human_readable_size(test_size)
+        test_size = 1 * constants.GIGABYTE
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1.0 GiB")
 
     def test_human_size_terabytes(self):
+        test_size: int = 1500 * constants.GIGABYTE
+        size: str = helpers.get_human_readable_size(test_size)
         test_size: int = 1500 * constants.GIGABYTE
         size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1500.0 GiB")
