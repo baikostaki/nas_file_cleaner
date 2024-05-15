@@ -1,10 +1,9 @@
-import inspect
 from pathlib import Path
 import unittest
 from tempfile import TemporaryDirectory
 import shutil
-from helpers import Helper
-from constants import Constants
+from helper_modules import helpers, constants
+import os
 
 
 def seed_dirs(path: str) -> list[Path]:
@@ -13,37 +12,40 @@ def seed_dirs(path: str) -> list[Path]:
     d1.mkdir(parents=True)
     d2.mkdir()
     with open(Path(d1, "file1.file"), "w") as file:
-        file.truncate(100 * Constants.KILOBYTE)
+        file.truncate(100 * constants.KILOBYTE)
     with open(Path(d1, "file2.file"), "w") as file:
-        file.truncate(110 * Constants.KILOBYTE)
+        file.truncate(110 * constants.KILOBYTE)
     with open(Path(d1.parent, "file3.file"), "w") as file:
-        file.truncate(120 * Constants.KILOBYTE)
+        file.truncate(120 * constants.KILOBYTE)
     with open(Path(d1, "bigger_than_1mb_file.file"), "w") as file:
-        file.truncate(1 * Constants.MEGABYTE + 1)
+        file.truncate(1 * constants.MEGABYTE + 1)
     return list((d1, d2))
 
+
 def seed_folders(path: str) -> tuple[Path, Path]:
-        d1: Path = Path(path, "lvl1/", "lvl2/", "lvl3/")
-        d2: Path = Path(path, ".thumb/")
-        d1.mkdir(parents=True)
-        d2.mkdir()
-        return (d1, d2)
-    
+    d1: Path = Path(path, "lvl1/", "lvl2/", "lvl3/")
+    d2: Path = Path(path, ".thumb/")
+    d1.mkdir(parents=True)
+    d2.mkdir()
+    return (d1, d2)
+
+
 def seed_files(path: str) -> tuple[Path, Path, Path, Path]:
-        d1: Path = Path(path, "lvl1/", "lvl2/", "lvl3/")
-        f1: Path = Path(d1, "file1.file")
-        f2: Path = Path(d1, "file2.file")
-        f3: Path = Path(d1.parent, "file3.file")
-        f4: Path = Path(d1, "bigger_than_1mb_file.file")
-        with open(f1, "w") as file:
-            file.truncate(100 * Constants.KILOBYTE)
-        with open(f2, "w") as file:
-            file.truncate(110 * Constants.KILOBYTE)
-        with open(f3, "w") as file:
-            file.truncate(20 * Constants.KILOBYTE)
-        with open(f4, "w") as file:
-            file.truncate(1 * Constants.MEGABYTE + 1)
-        return (f1, f2, f3, f4)
+    d1: Path = Path(path, "lvl1/", "lvl2/", "lvl3/")
+    f1: Path = Path(d1, "file1.file")
+    f2: Path = Path(d1, "file2.file")
+    f3: Path = Path(d1.parent, "file3.file")
+    f4: Path = Path(d1, "bigger_than_1mb_file.file")
+    with open(f1, "w") as file:
+        file.truncate(100 * constants.KILOBYTE)
+    with open(f2, "w") as file:
+        file.truncate(110 * constants.KILOBYTE)
+    with open(f3, "w") as file:
+        file.truncate(20 * constants.KILOBYTE)
+    with open(f4, "w") as file:
+        file.truncate(1 * constants.MEGABYTE + 1)
+    return (f1, f2, f3, f4)
+
 
 class Printer:
     @staticmethod
@@ -72,43 +74,41 @@ class Printer:
 class TestHumanReadableSize(unittest.TestCase):
     def test_human_size_zero_bytes(self):
         test_size: int = 0
-        size: str = Helper.get_human_readable_size(test_size)
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "0.0 B")
 
     def test_human_size_bytes(self):
         test_size: int = 150
-        size: str = Helper.get_human_readable_size(test_size)
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "150.0 B")
 
     def test_human_size_kilobytes(self):
-        test_size: int = 1 * Constants.KILOBYTE
-        size: str = Helper.get_human_readable_size(test_size)
+        test_size: int = 1 * constants.KILOBYTE
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1.0 KiB")
 
     def test_human_size_megabytes(self):
-        test_size: int = 1 * Constants.MEGABYTE
-        size: str = Helper.get_human_readable_size(test_size)
+        test_size: int = 1 * constants.MEGABYTE
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1.0 MiB")
 
     def test_human_size_gigabytes(self):
-        test_size = 1 * Constants.GIGABYTE
-        size: str = Helper.get_human_readable_size(test_size)
+        test_size = 1 * constants.GIGABYTE
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1.0 GiB")
 
     def test_human_size_terabytes(self):
-        test_size: int = 1500 * Constants.GIGABYTE
-        size: str = Helper.get_human_readable_size(test_size)
+        test_size: int = 1500 * constants.GIGABYTE
+        size: str = helpers.get_human_readable_size(test_size)
         self.assertEqual(size, "1500.0 GiB")
 
 
-class TestHelperMethods(unittest.TestCase):
+class TesthelpersMethods(unittest.TestCase):
+
     def test_create_folders(self, verbose: bool = False):
         with TemporaryDirectory() as tmp_dir:
             self.assertFalse(any(Path(tmp_dir).iterdir()))
             dirs: list[Path] = list(seed_dirs(tmp_dir))
-            if verbose:
-                Printer.print_files_from_list(dirs)
-                self.assertTrue(any(Path(tmp_dir).iterdir()))
 
     def test_create_files_in_folders(self, verbose: bool = False):
         with TemporaryDirectory() as tmp_dir:
@@ -130,17 +130,7 @@ class TestDeleteDirTree(unittest.TestCase):
             self.d1, self.d2 = seed_dirs(tmp_dir)
             self.assertTrue(self.d1.is_dir())
             self.assertTrue(self.d2.is_dir())
-            if verbose:
-                Printer.print_files_in_path_recursively(
-                    Path(tmp_dir), "*", f"printed by {inspect.stack()[0][3]}() "
-                )
-
             shutil.rmtree(tmp_dir)
-            if verbose:
-                Printer.print_files_in_path_recursively(
-                    Path(tmp_dir), "*", "Printed after shutil.rmtree()\n"
-                )
-
             self.assertFalse(Path(tmp_dir).exists())
 
 
@@ -149,8 +139,7 @@ class TestFiltering(unittest.TestCase):
     def setUpClass(cls) -> None:
         pass
         # TODO: Add decorator to functions for verbose mode
-        
-    
+
     def test_filter_of_files(self, verbose: bool = True) -> None:
         with TemporaryDirectory() as tmp_dir:
             self.d1: Path
@@ -159,30 +148,28 @@ class TestFiltering(unittest.TestCase):
             seed_files(tmp_dir)
             self.assertTrue(self.d1.is_dir())
             self.assertTrue(self.d2.is_dir())
-            
+
             # less than 1 MiB
-            files_dict: dict[Path, int] = Helper.filter_by_size(
+            files_dict: dict[Path, int] = helpers.filter_by_size(
                 Path(tmp_dir),
-                Constants.EMPTY_DIR_GLOB,
-                1 * Constants.MEGABYTE,
+                constants.EMPTY_DIR_GLOB,
+                1 * constants.MEGABYTE,
             )
             if verbose:
                 Printer.print_paths_from_dict(
                     files_dict, additional_text="print after filtering"
                 )
-            expected_number_of_items: int = (
-                0 if ".thumb" in Constants.FILTER_SUFFIXES else 1
-            )
+            expected_number_of_items: int = 0 if ".thumb" in helpers.inodes else 1
             self.assertEqual(len(files_dict), expected_number_of_items)
             # less than 2 MiB
-            files_dict = Helper.filter_by_size(
-                Path(tmp_dir), Constants.EMPTY_DIR_GLOB, 2 * Constants.MEGABYTE
+            files_dict = helpers.filter_by_size(
+                Path(tmp_dir), constants.EMPTY_DIR_GLOB, 2 * constants.MEGABYTE
             )
-            expected_number_of_items = 1 if ".thumb" in Constants.FILTER_SUFFIXES else 2
+            expected_number_of_items = 1 if ".thumb" in helpers.inodes else 2
             self.assertEqual(len(files_dict), expected_number_of_items)
-            files_dict = Helper.filter_by_size(Path(tmp_dir), Constants.EMPTY_DIR_GLOB)
+            files_dict = helpers.filter_by_size(Path(tmp_dir), constants.EMPTY_DIR_GLOB)
             # < 50 kb .thumbs and file3
-            expected_number_of_items = 0 if ".thumb" in Constants.FILTER_SUFFIXES else 1
+            expected_number_of_items = 0 if ".thumb" in helpers.inodes else 1
             self.assertEqual(len(files_dict), expected_number_of_items)  #
 
 
