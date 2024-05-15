@@ -25,7 +25,7 @@ def print_files_from_list(files: list[Path], additional_text: str = "") -> None:
 def print_emptylike_folders(items: dict[Path, int], root_dir: Path) -> None:
     print(
         bcolors.WARNING
-        + f"Listing folders less than {helpers.get_human_readable_size(constants.FILE_SIZE_THRESHOLD)} in {root_dir}:"
+        + f"Listing items less than {helpers.get_human_readable_size(constants.FILE_SIZE_THRESHOLD)} in {root_dir}:"
         + bcolors.ENDC
     )
 

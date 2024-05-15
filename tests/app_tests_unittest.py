@@ -1,9 +1,9 @@
 from pathlib import Path
+from typing import Dict
 import unittest
 from tempfile import TemporaryDirectory
 import shutil
 from helper_modules import helpers, constants
-import os
 
 
 def seed_dirs(path: str) -> list[Path]:
@@ -108,7 +108,8 @@ class TesthelpersMethods(unittest.TestCase):
     def test_create_folders(self, verbose: bool = False):
         with TemporaryDirectory() as tmp_dir:
             self.assertFalse(any(Path(tmp_dir).iterdir()))
-            dirs: list[Path] = list(seed_dirs(tmp_dir))
+            # dirs: list[Path] = list(seed_dirs(tmp_dir))
+            (seed_dirs(tmp_dir))
 
     def test_create_files_in_folders(self, verbose: bool = False):
         with TemporaryDirectory() as tmp_dir:
@@ -149,27 +150,39 @@ class TestFiltering(unittest.TestCase):
             self.assertTrue(self.d1.is_dir())
             self.assertTrue(self.d2.is_dir())
 
+            # less than 2 MiB
+            files_dict = helpers.filter_by_size(
+                Path(tmp_dir),
+                constants.EMPTY_DIR_GLOB,
+                helpers.settings.get_all_suffixes(),
+                2 * constants.MEGABYTE,
+            )
+            expected_number_of_items = 1 if ".thumb" in helpers.filenodes else 2
+            self.assertEqual(len(files_dict), expected_number_of_items)
+
             # less than 1 MiB
             files_dict: dict[Path, int] = helpers.filter_by_size(
                 Path(tmp_dir),
                 constants.EMPTY_DIR_GLOB,
+                helpers.settings.get_all_suffixes(),
                 1 * constants.MEGABYTE,
             )
-            if verbose:
-                Printer.print_paths_from_dict(
-                    files_dict, additional_text="print after filtering"
-                )
-            expected_number_of_items: int = 0 if ".thumb" in helpers.inodes else 1
+
+            # if verbose:
+            #     Printer.print_paths_from_dict(
+            #         files_dict, additional_text="print after filtering"
+            #     )
+
+            expected_number_of_items: int = 0 if ".thumb" in helpers.filenodes else 1
             self.assertEqual(len(files_dict), expected_number_of_items)
-            # less than 2 MiB
-            files_dict = helpers.filter_by_size(
-                Path(tmp_dir), constants.EMPTY_DIR_GLOB, 2 * constants.MEGABYTE
-            )
-            expected_number_of_items = 1 if ".thumb" in helpers.inodes else 2
-            self.assertEqual(len(files_dict), expected_number_of_items)
-            files_dict = helpers.filter_by_size(Path(tmp_dir), constants.EMPTY_DIR_GLOB)
+
             # < 50 kb .thumbs and file3
-            expected_number_of_items = 0 if ".thumb" in helpers.inodes else 1
+            files_dict: Dict[Path, int] = helpers.filter_by_size(
+                Path(tmp_dir),
+                constants.EMPTY_DIR_GLOB,
+                helpers.settings.get_all_suffixes(),
+            )
+            expected_number_of_items = 0 if ".thumb" in helpers.filenodes else 1
             self.assertEqual(len(files_dict), expected_number_of_items)  #
 
 

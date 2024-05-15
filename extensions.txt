@@ -1,7 +1,8 @@
-#FILES_AND_FOLDERS
+#FILENODES
 .srt
 .sub
 .thumb
+.bat
 
 #ARCHIVES
 .rar

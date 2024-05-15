@@ -8,8 +8,8 @@ from settings import Settings
 
 settings = Settings()
 
-suffixes: Dict[str, List[str]] = settings.get_suffixes()
-inodes: List[str] = suffixes["FILES_AND_FOLDERS"]
+suffixes: Dict[str, List[str]] = settings.get_suffixes_dict()
+filenodes: List[str] = suffixes["FILENODES"]
 archive_suffixes: List[str] = suffixes["ARCHIVES"]
 
 # TODO: move sum_directory_tree on filtered list, instead of on all files
@@ -23,30 +23,29 @@ def sum_directory_tree(path: Path, glob: str) -> int:
 def filter_by_size(
     path: Path,
     glob: str,
+    suffixes: list[str],
     threshold: int = 50 * constants.KILOBYTE,
-    suffixes: list[str] = inodes,
 ) -> dict[Path, int]:
-    """Traverses all items and dirs in path and returns those less than **threshold**. Skips those that are in **suffixes** (dirnames and file extensions) and 
+    """Traverses all items and dirs in path and returns those less than **threshold**. Skips those that are in **suffixes** (dirnames and file extensions). Prints found items.
 
     Args:
         path (Path):
         glob (str):
-        threshold (int, optional): Defaults to 50 KiB.
         suffixes[str]: filters those out
+        threshold (int, optional): Defaults to 50 KiB.
 
     Returns:
         dict[Path, int]: dict with dirpath as key and its size as value
     """
     result: dict[Path, int] = {}
     for item in path.glob(glob):
+        current_size: int = -1
         if item.is_file() and item.suffix not in suffixes:
             current_size: int = item.stat().st_size
         elif item.is_dir() and item.stem not in suffixes:
             current_size = sum_directory_tree(item, glob=glob)
-        else:
-            continue
 
-        if current_size < threshold:
+        if current_size >=0 and current_size < threshold:
             result[item] = current_size
     return result
 
@@ -187,7 +186,7 @@ def filter_directories(
     batch_list: dict[Path, int] = {}
     current_size: int = -1
     for item in path.rglob("*"):
-        if not item.is_dir() or item.stem in inodes:
+        if not item.is_dir() or item.stem in filenodes:
             continue
         if item.is_file():
             current_size = item.stat().st_size

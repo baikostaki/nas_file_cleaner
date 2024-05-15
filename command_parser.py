@@ -1,12 +1,19 @@
 from pathlib import Path
 import shutil
-from helper_modules import helpers, printer, constants
-from helper_modules.printer import bcolors
 import os
 import patoolib  # type: ignore
+from typing import List
+
+from helper_modules import helpers, printer, constants
+from helper_modules.printer import bcolors
 
 
 class CommandParser:
+    filenode_extensions: List[str] = []
+
+    def __init__(self, settings: List[str]):
+        self.filenode_extensions = settings
+
     def extract_archives(self, curr_path: Path) -> None:
         archives: dict[Path, int] = helpers.find_archives(curr_path)
         sorted_by_size_desc = dict(
@@ -36,7 +43,10 @@ class CommandParser:
 
     def delete_emptylike_directories(self, threshold: int, curr_path: Path) -> None:
         dirs_to_delete: dict[Path, int] = helpers.filter_by_size(
-            curr_path, constants.EMPTY_DIR_GLOB, threshold
+            curr_path,
+            constants.EMPTY_DIR_GLOB,
+            self.filenode_extensions,
+            threshold,
         )
         printer.print_emptylike_folders(dirs_to_delete, curr_path)
         if len(dirs_to_delete) > 0:

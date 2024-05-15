@@ -5,6 +5,8 @@ from prompt import CmdPrompt
 
 
 from helper_modules.printer import App_Modes
+
+
 def main() -> None:
     threshold: int = 1 * constants.MEGABYTE
     prompt = CmdPrompt()
@@ -19,7 +21,7 @@ def main() -> None:
     curr_path: Path = Path(input_path.rstrip())
     prompt.print_commands()
     operation_mode: int = int(input())
-    cmd = CommandParser()
+    cmd = CommandParser(helpers.settings.get_all_suffixes())
 
     if operation_mode == App_Modes.DELETE_EMPTYLIKE_DIRS.value:
         cmd.delete_emptylike_directories(threshold, curr_path)
@@ -33,7 +35,8 @@ def main() -> None:
             cmd.remove_nested_directory(dir)
             cmd.remove_nested_directory(dir, delete_only=True)
 
-#TODO: Fix unpacking - won't unpack if already unpacked + somehow got stuck at WiAB-Chapter3-pc.zip - for others it created only empty dirs
-#TODO: _saves & html_saves should be added to file with excluded dirnames or better add logic to search for commonn empty dir patterns (maybe .save whitelist) first and then according to size
+
+# TODO: Fix unpacking - won't unpack if already unpacked + somehow got stuck at WiAB-Chapter3-pc.zip - for others it created only empty dirs
+# TODO: _saves & html_saves should be added to file with excluded dirnames or better add logic to search for commonn empty dir patterns (maybe .save whitelist) first and then according to size
 if __name__ == "__main__":
     main()
