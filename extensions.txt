@@ -1,0 +1,9 @@
+#FILES_AND_FOLDERS
+.srt
+.sub
+.thumb
+
+#ARCHIVES
+.rar
+.zip
+.7z

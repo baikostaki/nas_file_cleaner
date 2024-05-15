@@ -1,17 +1,17 @@
 from pathlib import Path
 import shutil
-from helpers import Helper, Printer
-from constants import bcolors, Constants
+from helpers import helpers, printer, constants
+from helpers.printer import bcolors
 import os
 import patoolib  # type: ignore
 
 class CommandParser:
     def extract_archives(self, curr_path: Path) -> None:
-        archives: dict[Path, int] = Helper.find_archives(curr_path)
+        archives: dict[Path, int] = helpers.find_archives(curr_path)
         sorted_by_size_desc = dict(
             sorted(archives.items(), key=lambda x: x[1], reverse=True)
         )
-        Printer.print_items(sorted_by_size_desc, bcolors.ENDC)
+        printer.print_items(sorted_by_size_desc, bcolors.ENDC)
         os.chdir(curr_path)
         for a in archives:
             if not Path(a.stem).is_dir():
@@ -19,8 +19,8 @@ class CommandParser:
             patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.", verbosity=0)  # type: ignore
 
     def delete_unpacked_archives(self, curr_path: Path):
-        archives_to_delete: dict[Path, int] = Helper.find_extracted_archives(curr_path)
-        Printer.print_unpacked_archives(archives_to_delete, curr_path)
+        archives_to_delete: dict[Path, int] = helpers.find_extracted_archives(curr_path)
+        printer.print_unpacked_archives(archives_to_delete, curr_path)
         if len(archives_to_delete) > 0:
             delete_files: bool = (
                 True
@@ -31,13 +31,13 @@ class CommandParser:
                 else False
             )
             if delete_files:
-                Helper.delete_items(archives_to_delete)
+                helpers.delete_items(archives_to_delete)
 
     def delete_emptylike_directories(self, threshold: int, curr_path: Path) -> None:
-        dirs_to_delete: dict[Path, int] = Helper.filter_by_size(
-            curr_path, Constants.EMPTY_DIR_GLOB, threshold
+        dirs_to_delete: dict[Path, int] = helpers.filter_by_size(
+            curr_path, constants.EMPTY_DIR_GLOB, threshold
         )
-        Printer.print_emptylike_folders(dirs_to_delete, curr_path)
+        printer.print_emptylike_folders(dirs_to_delete, curr_path)
         if len(dirs_to_delete) > 0:
             delete_dirs: bool = (
                 True
@@ -48,7 +48,7 @@ class CommandParser:
                 else False
             )
             if delete_dirs:
-                Helper.delete_empty_dirs(dirs_to_delete)  # type: ignore
+                helpers.delete_empty_dirs(dirs_to_delete)  # type: ignore
 
     def remove_nested_directory(self, path: Path, delete_only: bool = False) -> None:
         dirs: list[Path] = [p for p in list(path.glob("*")) if p.is_dir()] 
