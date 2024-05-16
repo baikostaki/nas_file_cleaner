@@ -3,7 +3,8 @@ import shutil
 from typing import Dict, Generator, List
 from helper_modules import constants
 import os
-from settings import Settings
+
+from app_modules.settings import Settings
 
 
 settings = Settings()
@@ -14,11 +15,14 @@ archive_suffixes: List[str] = suffixes["ARCHIVES"]
 
 # TODO: move sum_directory_tree on filtered list, instead of on all files
 
+
 def sum_directory_tree(path: Path, glob: str) -> int:
     return sum(f.stat().st_size for f in path.rglob(glob))
 
+
 # FIXME: refactor method and edit docstring, why should I pass glob to it? Why call it filter by size when
 # method returns dict with dirpath and its size?
+
 
 def filter_by_size(
     path: Path,
@@ -45,7 +49,7 @@ def filter_by_size(
         elif item.is_dir() and item.stem not in suffixes:
             current_size = sum_directory_tree(item, glob=glob)
 
-        if current_size >=0 and current_size < threshold:
+        if current_size >= 0 and current_size < threshold:
             result[item] = current_size
     return result
 
@@ -68,6 +72,7 @@ def get_human_readable_size(size: int = 0) -> str:
 
     return str(round(current_size, 2)) + " " + suffix
 
+
 # TODO: Unit test it and use the dict comprehension afterwards
 def find_archives(path: Path) -> dict[Path, int]:
     # archives: dict[Path, int] = {}
@@ -79,14 +84,16 @@ def find_archives(path: Path) -> dict[Path, int]:
     #         size += archives[p]
 
     # TODO: implement this: (ChatGPT)
-    archives: dict[Path, int] = {  
+    archives: dict[Path, int] = {
         p: p.stat().st_size
         for p in path.glob("*")
         if p.is_file() and p.suffix in archive_suffixes
     }
     return archives
 
+
 # TODO: check why -1 is needed
+
 
 def find_extracted_archives(path: Path) -> dict[Path, int]:
     folders: dict[Path, int] = {}
@@ -133,13 +140,16 @@ def list_files(path: Path) -> dict[Path, int]:
 
     return result
 
+
 # @staticmethod
 # def find_and_print_archives_to_delete(path: Path) -> dict[Path, int]:
 #     result: dict[Path, int] = Helper.find_extracted_archives(Path(path))
 #     return result
 
+
 def find_unextracted_archives(path: Path) -> dict[Path, int]:
     return {path: -1}
+
 
 def is_int(s: str) -> bool:
     try:
@@ -148,6 +158,7 @@ def is_int(s: str) -> bool:
         return False
     else:
         return True
+
 
 def delete_items(paths: dict[Path, int]) -> None:
     for item in paths:
@@ -177,7 +188,8 @@ def delete_empty_dirs(paths: dict[Path, int]) -> None:
     pass
     # delete batch files, make it ask for prompt, then uncomment :)
     for item in paths:
-        shutil.rmtree(item)
+        shutil.rmtree(item)  # type:ignore
+
 
 @staticmethod
 def filter_directories(

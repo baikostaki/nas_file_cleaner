@@ -7,7 +7,7 @@ class Settings:
 
     def __init__(self) -> None:
         current_category = str()
-        with open("extensions.txt", "r") as f:
+        with open("./app_modules/extensions.txt", "r") as f:
             lines = f.read().splitlines()
             for line in lines:
                 if line.startswith("#"):

@@ -145,7 +145,7 @@ class TestDeleteDirTree(unittest.TestCase):
             self.d1, self.d2 = seed_dirs(tmp_dir)
             self.assertTrue(self.d1.is_dir())
             self.assertTrue(self.d2.is_dir())
-            shutil.rmtree(tmp_dir)
+            shutil.rmtree(tmp_dir)  # type: ignore
             self.assertFalse(Path(tmp_dir).exists())
 
 

@@ -1,7 +1,8 @@
 from pathlib import Path
-from command_parser import CommandParser
+
 from helper_modules import helpers, constants
-from prompt import CmdPrompt
+from app_modules.command_parser import CommandParser
+from app_modules import prompt
 
 
 from helper_modules.printer import App_Modes
@@ -9,7 +10,6 @@ from helper_modules.printer import App_Modes
 
 def main() -> None:
     threshold: int = 1 * constants.MEGABYTE
-    prompt = CmdPrompt()
     print(r"choose a path from list or enter a new one")
     prompt.print_paths()
     input_path: str = input()
