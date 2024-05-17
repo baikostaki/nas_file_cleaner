@@ -1,11 +1,10 @@
-from enum import Enum
 from pathlib import Path
 import os
 from helper_modules import helpers
 import helper_modules.constants as constants
-from helper_modules import terminal_colors as bcolors #as bcolors because otherwise I have to change in below
-
-
+from helper_modules import (
+    terminal_colors as bcolors,
+)  # as bcolors because otherwise I have to change in below
 
 
 def print_files_in_path_recursively(
@@ -63,12 +62,3 @@ def print_unpacked_archives(items: dict[Path, int], path: Path) -> None:
 def remove_redundant_dir(path: Path) -> None:
     os.chdir(path)
     pass
-
-
-class App_Modes(Enum):
-    DELETE_EMPTYLIKE_DIRS = 1
-    DELETE_UNPACKED_ARCHIVES = 2
-    EXTRACT_ARCHIVES = 3
-    REMOVE_NESTED_DIRECTORIES = 4
-
-        

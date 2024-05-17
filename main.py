@@ -1,41 +1,33 @@
 from pathlib import Path
-
-from helper_modules import helpers, constants
-from app_modules.command_parser import CommandParser
-from app_modules import prompt
-
-
-from helper_modules.printer import App_Modes
+from app_modules.persistence_handler import PersistenceHandler
+from app_modules.command_parser import Commander
+from app_modules.user_input_handler import InputHandler
+from app_modules.settings import Settings
 
 
+# TODO: move those thing below to CommandParser.parse_commands and create the parser as a Module, instead of class, don't think it needs to be instantiated.
 def main() -> None:
-    threshold: int = 1 * constants.MEGABYTE
-    print(r"choose a path from list or enter a new one")
-    prompt.print_paths()
-    input_path: str = input()
-    if helpers.is_int(input_path):
-        input_path: str = prompt.retrieve_path_by_index(int(input_path))
-    else:
-        prompt.store_path(input_path)
+    settings = Settings()
+    persistence = PersistenceHandler("app_modules/path_history.txt")
+    cmd = Commander(settings.get_all_suffixes())
+    input_handler = InputHandler(cmd, persistence)
+    user_input: tuple[Path, int] = input_handler.start()
+    cmd.start(*user_input)
 
-    curr_path: Path = Path(input_path.rstrip())
-    prompt.print_commands()
-    operation_mode: int = int(input())
-    cmd = CommandParser(helpers.settings.get_all_suffixes())
+    # threshold: int = 1 * constants.MEGABYTE
+    # print(r"choose a path from list or enter a new one")
+    # prompt.print_paths()
+    # input_path: str = input()
+    # if helpers.is_int(input_path):
+    #     input_path: str = prompt.retrieve_path_by_index(int(input_path))
+    # else:
+    #     prompt.store_path(input_path)
 
-    if operation_mode == App_Modes.DELETE_EMPTYLIKE_DIRS.value:
-        cmd.delete_emptylike_directories(threshold, curr_path)
-    elif operation_mode == App_Modes.DELETE_UNPACKED_ARCHIVES.value:
-        cmd.delete_unpacked_archives(curr_path)
-    elif operation_mode == App_Modes.EXTRACT_ARCHIVES.value:
-        cmd.extract_archives(curr_path)
-    elif operation_mode == App_Modes.REMOVE_NESTED_DIRECTORIES.value:
-        nested_dirs: list[Path] = helpers.find_nested_directories(curr_path)
-        for dir in nested_dirs:
-            cmd.remove_nested_directory(dir)
-            cmd.remove_nested_directory(dir, delete_only=True)
+    # curr_path: Path = Path(input_path.rstrip())
+    # prompt.print_commands()
+    # operation_mode: int = int(input())
+    # cmd = Commander(helpers.settings.get_all_suffixes())
 
 
-# TODO: _saves & html_saves should be added to file with excluded dirnames or better add logic to search for commonn empty dir patterns (maybe .save whitelist) first and then according to size
 if __name__ == "__main__":
     main()

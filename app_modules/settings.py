@@ -1,7 +1,6 @@
 from typing import List, Dict
 
 
-# FIXME - maybe create it as a module somehow?
 class Settings:
     suffixes: Dict[str, List[str]] = {}
 
