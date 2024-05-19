@@ -75,15 +75,6 @@ def get_human_readable_size(size: int = 0) -> str:
 
 # TODO: Unit test it and use the dict comprehension afterwards
 def find_archives(path: Path) -> dict[Path, int]:
-    # archives: dict[Path, int] = {}
-    # items: Generator[Path, None, None] = path.glob("*")
-    # size = 0
-    # for p in list(items):
-    #     if p.is_file() and p.suffix in archive_suffixes:
-    #         archives[p] = p.stat().st_size
-    #         size += archives[p]
-
-    # TODO: implement this: (ChatGPT)
     archives: dict[Path, int] = {
         p: p.stat().st_size
         for p in path.glob("*")

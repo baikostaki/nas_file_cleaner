@@ -9,7 +9,7 @@ from typing import List
 from helper_modules import helpers, printer, constants
 from helper_modules.printer import bcolors
 
-# TODO: Refactor user input out of function performing tasks
+# TODO: Maybe Refactor user input out of function performing tasks
 
 
 class App_Modes(Enum):
@@ -24,7 +24,7 @@ class Commander:
     threshold: int = 1 * constants.MEGABYTE
     operation_mode: int = 0
 
-    # TODO: Move all settings in this class maybe?
+    # TODO: Move all settings in this class(settings) maybe?
     def __init__(
         self, settings: List[str], threshhold: int = 1 * constants.MEGABYTE
     ) -> None:
@@ -57,35 +57,36 @@ class Commander:
                 self.remove_nested_directory(dir)
                 self.remove_nested_directory(dir, delete_only=True)
 
-    # TODO: move print archives from here, call it somehow differently, maybe return something
-    def extract_archives(self, path: Path) -> None:
+    def extract_archives(self, path: Path, verbose: bool = True) -> None:
         """Finds all archives in a path (non-recursive) and extracts them to the same directory.
 
         Args:
             path (Path): Path to look for and extract archives to.
+            verbose (bool, optional): if True - prints items to extract
         """
         archives: dict[Path, int] = helpers.find_archives(path)
         sorted_by_size_desc = dict(
             sorted(archives.items(), key=lambda x: x[1], reverse=True)
         )
-        printer.print_items(sorted_by_size_desc, bcolors.ENDC)
+        if verbose:
+            printer.print_items(sorted_by_size_desc, bcolors.ENDC)
         os.chdir(path)
         for a in archives:
             if not Path(a.stem).is_dir():
                 os.mkdir(a.stem)
             patoolib.extract_archive(str(a), outdir=rf"{a.stem}\.", verbosity=0)  # type: ignore
 
-    # TODO: Move the printing elsewhere, maybe has to return the list of archives?
-    # TODO: Move user input somewhere else - maybe first input, then check, then action
     # TODO: Check for size of folders, so that it doesn't delete an empty folder.
-    def delete_unpacked_archives(self, path: Path):
+    def delete_unpacked_archives(self, path: Path, verbose: bool = True):
         """Looks foldernames with the name of archives in directory. Lists all matches and asks user to delete them.
 
         Args:
             path (Path): path to archives
+            verbose (bool, optional): if True - prints items to extract
         """
         archives_to_delete: dict[Path, int] = helpers.find_extracted_archives(path)
-        printer.print_unpacked_archives(archives_to_delete, path)
+        if verbose:
+            printer.print_unpacked_archives(archives_to_delete, path)
         if len(archives_to_delete) > 0:
             delete_files: bool = (
                 True
@@ -111,8 +112,8 @@ class Commander:
             self.filenode_extensions,
             threshold,
         )
-        printer.print_emptylike_folders(dirs_to_delete, path)
         if len(dirs_to_delete) > 0:
+            printer.print_emptylike_folders(dirs_to_delete, path)
             delete_dirs: bool = (
                 True
                 if input(
@@ -122,21 +123,19 @@ class Commander:
                 else False
             )
             if delete_dirs:
-                helpers.delete_empty_dirs(dirs_to_delete)  # type: ignore
+                helpers.delete_empty_dirs(dirs_to_delete)
+        else:
+            printer.print_no_emptylike_message(path)
 
     # TODO: Test it, I am not sure it works
     def remove_nested_directory(self, path: Path, delete_only: bool = False) -> None:
 
         dirs: list[Path] = [p for p in list(path.glob("*")) if p.is_dir()]
-        print("Listing nested directories")
-        print("Nested dir is empty") if not dirs else [print(f"{x}") for x in dirs]
-
-        # [print(f".....{x}") for x in items_to_move]
+        printer.ppath("Listing nested directories under P{path}")
 
         # empty directory
         if Path.exists(path) and not dirs:
             os.rmdir(path)
-            print(f"path {path} removed")
             if delete_only:
                 return
 

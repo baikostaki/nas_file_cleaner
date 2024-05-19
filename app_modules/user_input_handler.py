@@ -4,7 +4,6 @@ from app_modules.persistence_handler import PersistenceHandler
 from helper_modules import helpers
 
 
-# BUG: somehow it messes up
 class InputHandler:
     input_path: Path = Path()
 
@@ -32,11 +31,11 @@ class InputHandler:
         """
         print(r"choose a path from list or enter a new one")
         self.persistence_handler.print_paths()
-        # BUG here something bad happens with paths
-        input_path: str = input()
+        input_path: str = "e:\test"
+        # input_path: str = input()
         if helpers.is_int(input_path):
-            self.input_path = self.persistence_handler.retrieve_path_by_index(
-                int(input_path)
+            self.input_path = Path(
+                self.persistence_handler.retrieve_path_by_index(int(input_path))
             )
         else:
             self.persistence_handler.store_path(input_path)

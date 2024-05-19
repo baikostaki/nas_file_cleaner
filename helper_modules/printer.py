@@ -1,5 +1,7 @@
+# TODO fix printer - maybe make it a class - it
 from pathlib import Path
 import os
+from typing import Any
 from helper_modules import helpers
 import helper_modules.constants as constants
 from helper_modules import (
@@ -24,7 +26,7 @@ def print_files_from_list(files: list[Path], additional_text: str = "") -> None:
 def print_emptylike_folders(items: dict[Path, int], root_dir: Path) -> None:
     print(
         bcolors.WARNING
-        + f"Listing items less than {helpers.get_human_readable_size(constants.FILE_SIZE_THRESHOLD)} in {root_dir}:"
+        + f"Listing items less than {helpers.get_human_readable_size(constants.FILE_SIZE_THRESHOLD)} in {repr(str(root_dir))}:"
         + bcolors.ENDC
     )
 
@@ -38,6 +40,33 @@ def print_emptylike_folders(items: dict[Path, int], root_dir: Path) -> None:
         + f'Total size for {len(items)} folder{"s" if len(items)>1 else ""} is {helpers.get_human_readable_size(total_size)}'
         + bcolors.ENDC
     )
+
+
+# TODO: add logic to fallback to default color if you write color = "white"
+# TODO: maybe write decorators for each color if it is possible?
+def ppath(path: Any, color: str = bcolors.WARNING) -> None:  # type: ignore
+    """short for print path - it equally whether the argument is of type Path or str
+
+    Args:
+        path (Any): path to file/directory
+        color (string, optional, defaults to bcolors.Warning): uses bcolors ANSI things to set color to console
+
+    Raises:
+        TypeError: if you call it on other printable types -> you shouldn't :)
+    """
+
+    if isinstance(path, str):
+        print(color + repr(path) + bcolors.ENDC)
+    elif isinstance(path, Path):
+        print(color + repr(str(path)) + bcolors.ENDC)
+    else:
+        raise TypeError(
+            f"{path}: {type(path)} is not a supported type. Expected Path or str"
+        )
+
+
+def print_no_emptylike_message(path: Path) -> None:
+    ppath(f"No emptylike folders found in {(path)}")
 
 
 def print_items(dirs: dict[Path, int], colors: str, total: bool = True) -> None:

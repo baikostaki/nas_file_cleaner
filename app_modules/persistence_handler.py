@@ -32,12 +32,12 @@ class PersistenceHandler:
         return self.paths
 
     def store_path(self, path: str) -> None:
-        """Adds path to persistent file and after that to path memory object
+        """Adds path to persistent file and after that to path memory object unless it's already there
 
         Args:
             path (str): _description_
         """
-        if path not in self.paths:
+        if path.casefold() not in (p.casefold() for p in self.paths):
             print("Path already saved!")
             return
 
