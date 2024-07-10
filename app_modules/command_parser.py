@@ -14,8 +14,8 @@ from helper_modules.printer import bcolors
 
 class App_Modes(Enum):
     DELETE_EMPTYLIKE_DIRS = 1
-    DELETE_UNPACKED_ARCHIVES = 2
-    EXTRACT_ARCHIVES = 3
+    EXTRACT_ARCHIVES = 2
+    DELETE_UNPACKED_ARCHIVES = 3
     REMOVE_NESTED_DIRECTORIES = 4
 
 
@@ -44,6 +44,7 @@ class Commander:
             operation_mode (int): User-selectable, chooses app action
             path (Path): User-selectable, chooses Path for action
         """
+        # if int(path) :
         self.operation_mode = operation_mode
         if self.operation_mode == App_Modes.DELETE_EMPTYLIKE_DIRS.value:
             self.delete_emptylike_directories(self.threshold, path)

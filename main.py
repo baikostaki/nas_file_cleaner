@@ -11,6 +11,7 @@ def main() -> None:
     cmd = Commander(settings.get_all_suffixes())
     input_handler = InputHandler(cmd, persistence)
     user_input: tuple[Path, int] = input_handler.start()
+    # TODO: file path index are broken -> following line gives error when '0' is submitted by user
     cmd.start(*user_input)
 
 
