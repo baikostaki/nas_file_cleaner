@@ -45,7 +45,7 @@ def print_emptylike_folders(items: dict[Path, int], root_dir: Path) -> None:
 # TODO: add logic to fallback to default color if you write color = "white"
 # TODO: maybe write decorators for each color if it is possible?
 def ppath(path: Any, color: str = bcolors.WARNING) -> None:  # type: ignore
-    """short for print path - it equally whether the argument is of type Path or str
+    """short for print path - acceots arguments of type Path or str
 
     Args:
         path (Any): path to file/directory
@@ -80,7 +80,7 @@ def print_items(dirs: dict[Path, int], colors: str, total: bool = True) -> None:
 
 def print_unpacked_archives(items: dict[Path, int], path: Path) -> None:
     print(bcolors.OKGREEN + f"Listing unpacked archives in {path}: " + bcolors.ENDC)
-    print_items(items, bcolors.ENDC)
+    print_items(items, bcolors.ENDC, total=False)
     print(
         bcolors.OKGREEN
         + f'Total size for {len(items)} unpacked archive{"s" if len(items)>1 else ""} is {helpers.get_human_readable_size(sum(items.values()))}'

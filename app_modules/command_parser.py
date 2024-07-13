@@ -128,11 +128,12 @@ class Commander:
         else:
             printer.print_no_emptylike_message(path)
 
-    # TODO: Test it, I am not sure it works
+    # TODO: Test it, I am not sure it works. Should do recursion with condition if items > 1 - then stop. If items == 0 (empty dir - delete whole dir)
+    # TODO: Remove path overwrite
     def remove_nested_directory(self, path: Path, delete_only: bool = False) -> None:
-
+        path = Path("E:\\test")
         dirs: list[Path] = [p for p in list(path.glob("*")) if p.is_dir()]
-        printer.ppath("Listing nested directories under P{path}")
+        printer.ppath(f"Listing nested directories under {path}")
 
         # empty directory
         if Path.exists(path) and not dirs:
@@ -141,7 +142,7 @@ class Commander:
                 return
 
         for item in dirs:
-            destination = item.parents[1]
+            destination = item.parents[0]
             if os.path.isfile(item):
                 shutil.move(item, destination)
             else:

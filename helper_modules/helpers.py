@@ -167,7 +167,6 @@ def find_nested_directories(curr_path: Path) -> list[Path]:
             for sub_folder in sub_folders:
                 if sub_folder.name == parent_folder_name:
                     batch_list.append(Path(sub_folder.parent, parent_folder_name))
-    [print(x) for x in batch_list]
     return batch_list
 
 
