@@ -27,7 +27,7 @@ class InputHandler:
         print("5: options 2 and 3 together NOT IMPLEMENTED YET")
         print("6: options 3 and 4 together")
 
-    def start(self) -> tuple[Path, int]:
+    def handle_input(self) -> tuple[Path, int]:
         """Prints message to user and takes input
 
         Returns:
@@ -42,9 +42,8 @@ class InputHandler:
                 self.persistence_handler.retrieve_path_by_index(int(input_path))
             )
         else:
-            self.persistence_handler.store_path(input_path)
+            self.input_path = self.persistence_handler.store_path(str(self.input_path))
 
-        curr_path: Path = Path(input_path.rstrip())
         self.print_commands()
         operation_mode: int = int(input())
-        return (curr_path, operation_mode)
+        return (self.input_path, operation_mode)

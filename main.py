@@ -10,7 +10,7 @@ def main() -> None:
     persistence = PersistenceHandler("app_modules/path_history.txt")
     cmd = Commander(settings.get_all_suffixes())
     input_handler = InputHandler(cmd, persistence)
-    user_input: tuple[Path, int] = input_handler.start()
+    user_input: tuple[Path, int] = input_handler.handle_input()
     # TODO: file path index are broken -> following line gives error when '0' is submitted by user
     cmd.start(*user_input)
 

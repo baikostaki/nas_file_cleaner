@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import List
 
 
@@ -31,7 +32,7 @@ class PersistenceHandler:
             self.paths: list[str] = f.readlines()
         return self.paths
 
-    def store_path(self, path: str) -> None:
+    def store_path(self, path: str) -> Path:
         """Adds path to persistent file and after that to path memory object unless it's already there
 
         Args:
@@ -39,12 +40,11 @@ class PersistenceHandler:
         """
         if path.casefold() not in (p.casefold() for p in self.paths):
             print("Path already saved!")
-            return
-
         if path != "\n":
             with open(self.file_with_paths, "a") as f:
                 f.write(f"{path}" + "\n")
             self.paths.append(path)
+        return Path(path)
 
     def retrieve_path_by_index(self, index: int) -> str:
         """Retrieves path by the index of printed paths.
@@ -58,8 +58,8 @@ class PersistenceHandler:
         Returns:
             str: Returns the path, corresponding to index
         """
-        if len(self.file_with_paths) >= index:
-            return self.file_with_paths[index]
+        if len(self.paths) >= index:
+            return self.paths[index].rstrip()
         else:
             raise IndexError("Please choose a valid index")
 
